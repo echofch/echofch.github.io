@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://echofch.github.io</id>
+    <title>方方不慌</title>
+    <updated>2021-03-30T12:40:33.502Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://echofch.github.io"/>
+    <link rel="self" href="https://echofch.github.io/atom.xml"/>
+    <subtitle>温故而知新</subtitle>
+    <logo>https://echofch.github.io/images/avatar.png</logo>
+    <icon>https://echofch.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2021, 方方不慌</rights>
+    <entry>
+        <title type="html"><![CDATA[MySQL索引初识]]></title>
+        <id>https://echofch.github.io/post/mysql-suo-yin-chu-shi/</id>
+        <link href="https://echofch.github.io/post/mysql-suo-yin-chu-shi/">
+        </link>
+        <updated>2021-03-30T09:01:50.000Z</updated>
+        <content type="html"><![CDATA[<p>索引是什么呢？类似于书的目录。MySQL的索引就是用来更快的找到数据。<br>
+MySQL的索引的数据结构主要有哈希和B+树两种，B+树这种数据结构要求子节点的个数应该在m到m/2之间，m越大树不是会越矮吗？越矮查找次数不是越少吗？为什么会给m一个限制？m是不能太小的，太小会使得查找的效率不高，但也不能太大，因为要控制m的大小为页，磁盘和内存的单位就是页，这样就进行一次io操作即可，索引的插入和删除效率低就是因为插入和删除数据时要保证它的节点个数保持在m到m/2的范围中。除了这个特点之外</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Hello Gridea]]></title>
+        <id>https://echofch.github.io/post/hello-gridea/</id>
+        <link href="https://echofch.github.io/post/hello-gridea/">
+        </link>
+        <updated>2018-12-11T16:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
+✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>👏  欢迎使用 <strong>Gridea</strong> ！<br>
+✍️  <strong>Gridea</strong> 一个静态博客写作客户端。你可以用它来记录你的生活、心情、知识、笔记、创意... ...</p>
+<!-- more -->
+<p><a href="https://github.com/getgridea/gridea">Github</a><br>
+<a href="https://gridea.dev/">Gridea 主页</a><br>
+<a href="http://fehey.com/">示例网站</a></p>
+<h2 id="特性">特性👇</h2>
+<p>📝  你可以使用最酷的 <strong>Markdown</strong> 语法，进行快速创作</p>
+<p>🌉  你可以给文章配上精美的封面图和在文章任意位置插入图片</p>
+<p>🏷️  你可以对文章进行标签分组</p>
+<p>📋  你可以自定义菜单，甚至可以创建外部链接菜单</p>
+<p>💻  你可以在 <strong>Windows</strong>，<strong>MacOS</strong> 或 <strong>Linux</strong> 设备上使用此客户端</p>
+<p>🌎  你可以使用 <strong>𝖦𝗂𝗍𝗁𝗎𝖻 𝖯𝖺𝗀𝖾𝗌</strong> 或 <strong>Coding Pages</strong> 向世界展示，未来将支持更多平台</p>
+<p>💬  你可以进行简单的配置，接入 <a href="https://github.com/gitalk/gitalk">Gitalk</a> 或 <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a> 评论系统</p>
+<p>🇬🇧  你可以使用<strong>中文简体</strong>或<strong>英语</strong></p>
+<p>🌁  你可以任意使用应用内默认主题或任意第三方主题，强大的主题自定义能力</p>
+<p>🖥  你可以自定义源文件夹，利用 OneDrive、百度网盘、iCloud、Dropbox 等进行多设备同步</p>
+<p>🌱 当然 <strong>Gridea</strong> 还很年轻，有很多不足，但请相信，它会不停向前 🏃</p>
+<p>未来，它一定会成为你离不开的伙伴</p>
+<p>尽情发挥你的才华吧！</p>
+<p>😘 Enjoy~</p>
+]]></content>
+    </entry>
+</feed>

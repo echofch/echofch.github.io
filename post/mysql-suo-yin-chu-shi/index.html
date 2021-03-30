@@ -1,0 +1,310 @@
+
+<html>
+  <head lang="zh">
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+        <meta content="yes" name="apple-mobile-web-app-capable"/>
+        <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+        <meta content="telephone=no" name="format-detection"/>
+        <meta name="renderer" content="webkit">
+    <title>MySQL索引初识 | 方方不慌</title>
+<link href="https://echofch.github.io/styles/main.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript" src="https://echofch.github.io/media/scripts/jquery.js"></script>
+<script type="text/javascript" src="https://echofch.github.io/media/scripts/basic.js"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+  </head>
+
+  <body>
+     <div class="header">
+      <div class="logo_title">
+		  
+        <div class="title animated fadeInDown"><img src="https://echofch.github.io/images/avatar.png?v=1617107636910"/>
+
+          <h1 title="方方不慌" class="weaklink"><a href="/">方方不慌</a>
+
+          </h1>
+
+          <div class="navbar weaklink">
+            <div class="normal_nav">
+
+<div class="bitcron_nav_container">
+
+
+  <div class="bitcron_nav">
+    <div class="mixed_site_nav_wrap site_nav_wrap">
+		
+      <ul class="mixed_site_nav site_nav sm sm-base">
+ 
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/" class="selected active current nav__item" >首页</a>
+
+  </li>
+ 
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/archives" class="selected active current nav__item" >归档</a>
+
+  </li>
+ 
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/tags" class="selected active current nav__item" >标签</a>
+
+  </li>
+ 
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/post/about" class="selected active current nav__item" >关于</a>
+
+  </li>
+ 
+
+      </ul>
+
+      <div class="clear clear_nav_inline_end"></div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="clear clear_nav_end"></div>
+
+</div>
+
+            </div>
+
+            <div class="hamberger"><i class="fa fa-bars"></i>
+<i class="fa fa-times"></i>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="hidden_nav animated fadeInDown">
+
+<div class="bitcron_nav_container">
+
+
+  <div class="bitcron_nav">
+    <div class="mixed_site_nav_wrap site_nav_wrap">
+      <ul class="mixed_site_nav site_nav sm sm-base">
+		  
+	
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/" class="selected active current nav__item" >首页</a>
+
+  </li>
+
+
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/archives" class="selected active current nav__item" >归档</a>
+
+  </li>
+
+
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/tags" class="selected active current nav__item" >标签</a>
+
+  </li>
+
+
+  <li><a id="d2ef19af68cc211e98f8a0242ac110003" href="/post/about" class="selected active current nav__item" >关于</a>
+
+  </li>
+
+
+
+
+
+      </ul>
+
+      <div class="clear clear_nav_inline_end"></div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="clear clear_nav_end"></div>
+
+</div>
+
+      </div>
+
+    </div>
+
+
+    <div class="main">
+      <div class="main-inner">
+
+
+<div class="content">
+
+
+
+
+
+
+  <div class="post_page" >
+
+<div class="post">
+  <div class="post_title sm_margin">
+    <h2><a>MySQL索引初识</a>
+
+
+
+    </h2>
+  </div>
+
+  <div class="post_details">
+    <div class="info"><i class="fa fa-clock-o"></i>
+<span class="date_info">2021-03-30</span>
+<i class="fa fa-eye"></i>
+
+<span class="date_info"><span id="busuanzi_value_page_pv"></span> Views</span>
+
+
+<i class="fa fa-bookmark-o"></i>
+<span class="tags_info weaklink">
+	
+	<a href="https://echofch.github.io/tag/5i7ydZOWD/" class="tag">MySQL那些事</a>
+
+
+</span>
+
+
+    </div>
+
+  </div>
+
+
+
+
+
+  <div class="post_content markdown"><p class="md_block">
+    <span class="md_line md_line_start md_line_end"><p>索引是什么呢？类似于书的目录。MySQL的索引就是用来更快的找到数据。<br>
+MySQL的索引的数据结构主要有哈希和B+树两种，B+树这种数据结构要求子节点的个数应该在m到m/2之间，m越大树不是会越矮吗？越矮查找次数不是越少吗？为什么会给m一个限制？m是不能太小的，太小会使得查找的效率不高，但也不能太大，因为要控制m的大小为页，磁盘和内存的单位就是页，这样就进行一次io操作即可，索引的插入和删除效率低就是因为插入和删除数据时要保证它的节点个数保持在m到m/2的范围中。除了这个特点之外</p>
+</p>
+
+     <p class="md_block">
+    <div class="reward"><div class="reward-button">赏 <span class="reward-code"> <span class="alipay-code"> <img class="alipay-img" src="https://echofch.github.io/media/images/alipay.png"><b>支付宝扫码打赏</b> </span> <span class="wechat-code"> <img class="wechat-img" src="https://echofch.github.io/media/images/wechat.png"><b>微信打赏</b> </span> </span></div></div>
+</p> 
+</div>
+
+</div>
+
+
+
+<link href="https://echofch.github.io/styles/main.css" type="text/css" rel="stylesheet"/>
+
+<div class="doc_comments">
+
+</div>
+
+
+
+  </div>
+</div>
+
+
+
+      </div>
+
+
+
+
+    </div>
+
+   <div class="footer">
+<link href="https://echofch.github.io/styles/main.css" type="text/css" rel="stylesheet"/><div class="site_footer_wrap"><div class="site_footer">
+
+      <div class="mysocials"><div class="my_socials">
+		   
+			   
+    
+			   
+    
+			   
+    
+			   
+    
+</div><link href="https://echofch.github.io/styles/main.css" type="text/css" rel="stylesheet"/>
+
+      </div>
+
+      <div class="copyright">Powered by <a href="https://github.com/getgridea/gridea" target="_blank">Gridea</a>
+      </div>
+
+</div></div>
+
+    </div>
+
+
+<style type="text/css">a.back_to_top {
+    text-decoration: none;
+    position: fixed;
+    bottom: 40px;
+    right: 30px;
+    background: #f0f0f0;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    line-height: 36px;
+    font-size: 18px;
+    text-align: center;
+    transition-duration: .5s;
+    transition-propety: background-color;
+    display: none;
+}
+
+a.back_to_top span {
+    color: #888;
+}
+
+a.back_to_top:hover {
+    cursor: pointer;
+    background: #dfdfdf;
+}
+
+a.back_to_top:hover span {
+    color: #555;
+}
+
+@media print, screen and (max-width: 580px) {
+    .back_to_top {
+        display: none !important;
+    }
+}
+
+
+
+</style><a id="back_to_top" href="#" class="back_to_top"><span>△</span>
+</a>
+<script type="text/javascript" src="https://echofch.github.io/media/scripts/jquery.js"></script>
+
+<script>$(document).ready((function(_this) {
+  return function() {
+    var bt;
+    bt = $('#back_to_top');
+    if ($(document).width() > 480) {
+      $(window).scroll(function() {
+        var st;
+        st = $(window).scrollTop();
+        if (st > 30) {
+          return bt.css('display', 'block');
+        } else {
+          return bt.css('display', 'none');
+        }
+      });
+      return bt.click(function() {
+        $('body,html').animate({
+          scrollTop: 0
+        }, 800);
+        return false;
+      });
+    }
+  };
+})(this));
+</script>
+
+</body>
+
+</html>
