@@ -6,7 +6,7 @@
         <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
         <meta content="telephone=no" name="format-detection"/>
         <meta name="renderer" content="webkit">
-    <title>MySQL索引初识 | 方方不慌</title>
+    <title>输入URL发送http/https请求 | 方方不慌</title>
 <link href="https://echofch.github.io/styles/main.css" type="text/css" rel="stylesheet"/>
 <script type="text/javascript" src="https://echofch.github.io/media/scripts/jquery.js"></script>
 <script type="text/javascript" src="https://echofch.github.io/media/scripts/basic.js"></script>
@@ -147,7 +147,7 @@
 
 <div class="post">
   <div class="post_title sm_margin">
-    <h2><a>MySQL索引初识</a>
+    <h2><a>输入URL发送http/https请求</a>
 
 
 
@@ -156,7 +156,7 @@
 
   <div class="post_details">
     <div class="info"><i class="fa fa-clock-o"></i>
-<span class="date_info">2021-03-30</span>
+<span class="date_info">2021-03-31</span>
 <i class="fa fa-eye"></i>
 
 <span class="date_info"><span id="busuanzi_value_page_pv"></span> Views</span>
@@ -165,7 +165,7 @@
 <i class="fa fa-bookmark-o"></i>
 <span class="tags_info weaklink">
 	
-	<a href="https://echofch.github.io/tag/5i7ydZOWD/" class="tag">MySQL那些事</a>
+	<a href="https://echofch.github.io/tag/nn2pII1RO/" class="tag">计网那些事</a>
 
 
 </span>
@@ -180,51 +180,17 @@
 
 
   <div class="post_content markdown"><p class="md_block">
-    <span class="md_line md_line_start md_line_end"><p>索引是什么呢？类似于书的目录。MySQL的索引就是用来更快的找到数据。索引分为主键索引和非主键索引，非主键索引得遍历两次索引树：第一次由非主键索引找到主键，第二次由主键找到数据所在位置。<br>
-MySQL的索引的数据结构主要有哈希和B+树两种。</p>
-<h2 id="b树">B+树</h2>
-<p>B+树 要求子节点的个数应该在m到m/2之间，m越大树不是会越矮吗？越矮查找次数不是越少吗？为什么会给m一个限制？<br>
-首先，m是不能太小的，太小会使得查找的效率不高；但也不能太大，因为要控制m的大小为页，磁盘和内存的单位就是页，这样就进行一次io操作即可。索引的插入和删除效率低就是因为插入和删除数据时要保证它的节点个数保持在m到m/2的范围中（发生【增加】页分裂和【删除】页合并）。<br>
-除了这个特点之外，B+树与B树的区别主要为：<br>
-m叉树中只存储索引，而不存储数据。这样做的好处就是B+树有更好的出度，能访问更多的数据。<br>
-B+树叶结点连起来正好是所有数据的有序序列，可以用来做全表顺序扫描或者范围查询。<br>
-B数的数据存储在各层结点上，叶结点只有部分数据，连起来也没有任何用处。</p>
-<h2 id="利用索引进行查询优化的小tips">利用索引进行查询优化的小Tips</h2>
-<p>如果不使用索引就会进行全表扫描，速度很慢。索引能加快查询的速度，可以进行好好的利用哦！</p>
-<ul>
-<li>如果使用了like关键字，以%开头索引会失效</li>
-<li>or:条件中存在没索引字段，索引会失效</li>
-<li>联合查询只有使用了第一个字段索引才生效<br>
-联合查询是利用第一个字段进行排序，其余字段在第一个字段的基础上排序，这就使得不采用第一个字段的话联合查询会失效</li>
-<li>可以利用索引对order by语句进行优化<br>
-order by 语句：order by 语句有两种实现方式。<br>
-一种为rowid，该方式是将主排序字段放于suffer sort 缓冲区进行排序，排完序后在从表中找到其他对应字段。<br>
-另一种方式是全排序，全排序是把所有需要的字段都放于缓冲区再进行排序。除非在字段字长很长的时候MySQL会选择rowid，其余时候，MySQL选择全排序。可见，MySQL的思想是         另可用内存，也不愿意访存。<br>
-第二种方式有点浪费缓冲区，原因是在缓冲区排序。可是索引不就是排好序的吗？这么一想，可以用索引对order by语句进行优化。<br>
-举个例子吧：select city，name，age from t where city=‘厦门’；如果我们利用联合索引（city，name），那就已经排好序了，只需要从表中找出age即可。<br>
-再进一步对索引进行优化，使用覆盖索引(索引字段就是要查找的字段)这就不需要回表中查找字段。建立联合索引（city,name,age)</li>
-</ul>
-<h2 id="mysql慢查询">MySQL慢查询</h2>
-<p>慢查询主要有三种情况</p>
-<ul>
-<li>
-<p>MySQL选错索引：选索引是优化器的工作，优化器主要通过扫描行数，是否有中间表，是否需要排序等方式进行判断。其中扫描行数是通过判断字段的基数，基数越大，区分度就越大｛例子：性别：[男，女],区分度小｝。扫描行数是通过抽样的方式算的，而抽样不准确</p>
-</li>
-<li>
-<p>sql语句写错，导致MySQL没用索引。这一般是使用了函数或是表达式。以选取最大月的函数为例，当并排的索引分别为2016.9 ，  2017.1  ，  2018.9  ，月份为 1,9,1 ，MySQL索引会不知道往哪走，所以干脆使用全表扫描。</p>
-</li>
-<li>
-<p>索引没设计好：这种情况发生时，可以用alter table增加紧急索引。最好的有主备两个服务器。备用服务器B关闭binlog（二进制记录文件），修改索引。接着主备切换，A变为备用服务器，关闭binlog，修改索引</p>
-<p>慢查询最常见的是情况是 sql语句写错 和 索引没设计好 这两种情况，这两种情况都是可以避免的。<br>
-在上线前进行测试：</p>
-</li>
-</ul>
-<ol>
-<li>上线前，在测试环境，把慢查询日志（slowlog）打开，并且把long_query_time设置成0，确保每个语句都会被记录入慢查询日志；</li>
-<li>在测试表里插入模拟线上的数据，做一遍回归测试；</li>
-<li>观察慢查询日志里每类语句的输出，特别留意Rows_examined字段是否与预期一致。</li>
-</ol>
-<p>第一篇文章先这样吧~希望我能坚持记录</p>
+    <span class="md_line md_line_start md_line_end"><p>简要从将url输入浏览器到浏览器返回页面这一过程发生了啥？</p>
+<p>输入URL后，浏览器会检查缓存，查看是否存在对应URL对应的IP地址，如果没有接着查询本机缓存，如果再没有，就会发起DNS请求。<br>
+DNS服务器的结构是树，是倒着进行解析的。根节点的根DNS服务器，他的子节点是像.cn 、.cm这样的顶级域名服务器，再往下是权限域名服务器。将找到的IP地址返回，浏览器就可以经过TCP三次握手后发起http或是https请求了。<br>
+以发送get请求为例：<br>
+浏览器检查是否有强缓存，如果有强缓存且未过期则命中，不发送http请求，如果没有则发送http请求。发送后，服务器会通过请求头查看浏览器最后一次请求该资源的时间以及资源校验码，如果资源没过期返回304校验码，如果过期了则重新发送资源。<br>
+浏览器接收到资源后，会加载html树，如果有图片或是css不会影响html文档的加载，他们是异步的。</p>
+<p>http是无状态的明文不加密传输，所以不管是它的get也好，post也好，都是不安全的，可以通过网络抓包的方式获取信息。https是安全的，它比http多了建立ssl连接这一部分。建立连接步骤如下：<br>
+1、浏览器向服务器发送https请求<br>
+2、服务器返回CA签名的证书<br>
+3、浏览器验证该证书的合法性---&gt;数字签名的作用：拥有公钥的人可以判断签名是不是由私钥持有人所拥有的。  签名是私钥持有者用私钥、文件利用加密算法进行加密所得到的一串值。公钥持有者将文件以及签名，公钥用验证算法进行验证，判断是否合法。数字签名有防篡改，防抵赖，认证三大作用。<img src="https://echofch.github.io/post-images/1617156273195.png" alt="" loading="lazy"><br>
+4、合法后浏览器生成一串随机值，用公钥将随机值进行加密。加密后传送给服务器，服务器用私钥解密得到随机值，接着就用这串随机值对称加密通信。</p>
 </p>
 
      <p class="md_block">
