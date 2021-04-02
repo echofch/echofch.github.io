@@ -6,7 +6,7 @@
         <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
         <meta content="telephone=no" name="format-detection"/>
         <meta name="renderer" content="webkit">
-    <title>输入URL发送http/https请求 | 方方不慌</title>
+    <title>短链接的设计 | 方方不慌</title>
 <link href="https://echofch.github.io/styles/main.css" type="text/css" rel="stylesheet"/>
 <script type="text/javascript" src="https://echofch.github.io/media/scripts/jquery.js"></script>
 <script type="text/javascript" src="https://echofch.github.io/media/scripts/basic.js"></script>
@@ -147,7 +147,7 @@
 
 <div class="post">
   <div class="post_title sm_margin">
-    <h2><a>输入URL发送http/https请求</a>
+    <h2><a>短链接的设计</a>
 
 
 
@@ -156,7 +156,7 @@
 
   <div class="post_details">
     <div class="info"><i class="fa fa-clock-o"></i>
-<span class="date_info">2021-03-31</span>
+<span class="date_info">2021-04-02</span>
 <i class="fa fa-eye"></i>
 
 <span class="date_info"><span id="busuanzi_value_page_pv"></span> Views</span>
@@ -165,8 +165,6 @@
 <i class="fa fa-bookmark-o"></i>
 <span class="tags_info weaklink">
 	
-	<a href="https://echofch.github.io/tag/nn2pII1RO/" class="tag">计网那些事</a>
-
 
 </span>
 
@@ -180,17 +178,32 @@
 
 
   <div class="post_content markdown"><p class="md_block">
-    <span class="md_line md_line_start md_line_end"><p>简要从将url输入浏览器到浏览器返回页面这一过程发生了啥？</p>
-<p>输入URL后，浏览器会检查缓存，查看是否存在对应URL对应的IP地址，如果没有接着查询本机缓存，如果再没有，就会发起DNS请求。<br>
-DNS服务器的结构是树，是倒着进行解析的。根节点的根DNS服务器，他的子节点是像.cn 、.cm这样的顶级域名服务器，再往下是权限域名服务器。将找到的IP地址返回，浏览器就可以经过TCP三次握手后发起http或是https请求了。<br>
-以发送get请求为例：<br>
-浏览器检查是否有强缓存，如果有强缓存且未过期则命中，不发送http请求，如果没有则发送http请求。发送后，服务器会通过请求头查看浏览器最后一次请求该资源的时间以及资源校验码，如果资源没过期返回304校验码，如果过期了则重新发送资源。<br>
-浏览器接收到资源后，会加载html树，如果有图片或是css不会影响html文档的加载，他们是异步的。</p>
-<p>http是无状态的明文不加密传输，所以不管是它的get也好，post也好，都是不安全的，可以通过网络抓包的方式获取信息。https是安全的，它比http多了建立ssl连接这一部分。建立连接步骤如下：<br>
-1、浏览器向服务器发送https请求<br>
-2、服务器返回CA签名的证书<br>
-3、浏览器验证该证书的合法性---&gt;数字签名的作用：拥有公钥的人可以判断签名是不是由私钥持有人所拥有的。  签名是私钥持有者用私钥、文件利用加密算法进行加密所得到的一串值。公钥持有者将文件以及签名，公钥用验证算法进行验证，判断是否合法。数字签名有防篡改，防抵赖，认证三大作用。<img src="https://echofch.github.io/post-images/1617156273195.png" alt="" loading="lazy"><br>
-4、合法后浏览器生成一串随机值，用公钥将随机值进行加密。加密后传送给服务器，服务器用私钥解密得到随机值，接着就用这串随机值对称加密通信。</p>
+    <span class="md_line md_line_start md_line_end"><p>在设计注册功能中的邮箱验证，会生成一个验证链接<br>
+最开始链接是这样的：http://xx.xx.com/bindemail.do?usrid=xxx&amp;sendTime=xxx<br>
+最大的问题是这样的验证连接并不安全，其次长链相对短链来说会有以下三个问题<br>
+1、长链形成的二维码相对于短链来说更加密集，难识别。<br>
+2、长链占用某些平台的可编辑文字长度。<br>
+3、长链在一些平台没办法被识别为超链接</p>
+<p>短链跳转是通过重定向的方式实现的。客户端访问短链服务器，再通过重定向校验码访问长链服务器。重定向的校验码有2种。分别是301和302.<br>
+301：永久重定向，能够把长链缓存在浏览器缓存中，下次访问就直接访问长链，可以减少短链服务器的server层的压力，但是这样做无法通过server层获取点击次数。如果有统计热度的需求，用302会更好。<br>
+302：暂时重定向。每次访问都会通过短链服务器。增加了server的压力，但是能统计访问次数</p>
+<p>短链生成方式<br>
+1、UUID：由于 UUID 是 32 位，比较长，而且不携带任何业务相关信息。除了唯一好像基本没其它优点。</p>
+<p>2、哈希算法：比较关心哈希算法中的冲突概率和运算速度。能够满足这样的加密算法有很多。，MurmurHash 是一种非加密型哈希函数，适用于一般的哈希检索操作。经过哈希算法得到的哈希值（10进制）还可以通过进制转换再次缩短，转为62进制。                  注意：有可能造成哈希冲突哟！<br>
+转换后通过MySQL或者redis储存起来。如果想邮箱验证这样实效性比较短的可以存储在redis中，给他设置过期时间。如果变化频率不高可以存储在MySQL中。<br>
+以下以MySQL为例：<br>
+利用MurmurHash生成短链--&gt;查询数据库中是否存在该短链--&gt;不存在则存储，存在则在长链后拼接自定义字符串重新生成并重复上述步骤。<br>
+可见这至少执行2次sql（查找+插入）：由于一般情况下计算与存储会放在两台不同的服务器上，两次sql可能要经过两次通信。怎么优化？利用唯一索引，给短链加上唯一索引。这样就不需要查询直接插入即可。产生冲突时再加入自定义字符串重新生成。<br>
+哈希算法冲突概率小，但访问量大的话，还是有一定概率会产生冲突。可以在短链插入数据库之前布隆过滤器进行筛选，筛选通过则直接插入，否则拼接字符串重新生成。</p>
+<pre><code>• 布隆过滤器（可以⾮常⽅便地判断⼀个给定数据是否存在于海量数据中）：把所有请求放在布隆过滤器上，请求通过看看是否存在与布隆过滤器，存在--访问缓存，不存在--无效请求
+	○ 布隆过滤器：判断出元素不在他就一定不在
+	不同的字符串可能哈希出来的位置相同，这种情况我们可以适当增加位数组大小或者调整我们的哈希函数。
+		§ 将给元素进行多个hash函数进行计算，将计算出的值所对应的下标置为1
+		§ 验证同：计算出的值对应数组的下标都为1，则判定为存在
+布隆过滤器使用场景
+判断给定数据是否存在：比如判断一个数字是否存在于包含大量数字的数字集中（数字集很大，5亿以上！）、 防止缓存穿透（判断请求的数据是否有效避免直接绕过缓存请求数据库）等等、邮箱的垃圾邮件过滤、黑名单功能等等。
+去重：比如爬给定网址的时候对已经爬取过的 URL 去重。
+</code></pre>
 </p>
 
      <p class="md_block">
